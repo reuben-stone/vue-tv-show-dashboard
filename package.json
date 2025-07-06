@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
-    "test": "vitest",
+    "test": "vitest run",
     "test:watch": "vitest --watch"
   },
   "dependencies": {
@@ -18,7 +18,11 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.11",
-    "@vitejs/plugin-vue": "^5.2.3",
+    "@testing-library/vue": "^8.1.0",
+    "@types/testing-library__vue": "^5.3.0",
+    "@vitejs/plugin-vue": "^5.2.4",
+    "@vitest/ui": "^3.2.4",
+    "@vue/runtime-dom": "^3.5.17",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.7.0",
     "autoprefixer": "^10.4.21",
