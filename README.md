@@ -46,8 +46,8 @@ Check out the live version of the app here:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/tv-show-dashboard.git
-cd tv-show-dashboard
+git clone https://github.com/reuben-stone/vue-tv-show-dashboard.git
+cd vue-tv-show-dashboard
 
 # Install dependencies
 npm install
@@ -119,11 +119,10 @@ src/
 Note: Since the API doesn't have a direct "by genre" endpoint, we categorize manually by reading the `genres` array from each show. Pagination is supported using the `?page=` query param (each page = up to 250 shows).
 
 ---
+<!-- 
+## 📸 Screenshots
 
-## 📸 Screenshots (optional)
-_Add some screenshots here if submitting or deploying._
-
----
+--- -->
 
 ## 📄 License
 
