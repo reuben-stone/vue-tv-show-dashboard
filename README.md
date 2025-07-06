@@ -126,6 +126,6 @@ This project is for educational and demonstration purposes only.
 
 ## 👋 Author
 
-Developed by Reuben Stone — 2025
+Developed by Reuben Stone (www.reubenstone.co.uk)
 
 > Designed for the ABN AMRO Frontend Developer Assessment

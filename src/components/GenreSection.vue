@@ -10,5 +10,5 @@
 <script setup lang="ts">
     import { defineProps } from 'vue'
     import ShowCard from './ShowCard.vue'
-    const props = defineProps<{ genre: string; shows: any[] }>()
+    const { genre, shows } = defineProps<{ genre: string; shows: any[] }>()
 </script>

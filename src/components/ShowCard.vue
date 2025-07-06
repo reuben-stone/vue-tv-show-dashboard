@@ -10,6 +10,6 @@
 </template>
 
 <script setup lang="ts">
-    import { defineProps } from 'vue'
-    const props = defineProps<{ show: any }>()
+import { defineProps } from 'vue'
+const { show } = defineProps<{ show: any }>()
 </script>
