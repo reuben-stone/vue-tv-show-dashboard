@@ -4,6 +4,13 @@ A responsive Vue 3 + TypeScript application that fetches, categorizes, and displ
 
 ---
 
+## 🌐 Live Demo
+
+Check out the live version of the app here:  
+[https://vue-tv-show-dashboard.vercel.app/](https://vue-tv-show-dashboard.vercel.app/)
+
+---
+
 ## 🧠 Features
 
 - 🔍 Search TV shows by name
