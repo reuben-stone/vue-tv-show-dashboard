@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-6">
+  <div class="mb-2">
     <input
       type="text"
       placeholder="Search TV shows..."
@@ -16,6 +16,6 @@
     const query = ref('')
 
     function emitSearch() {
-    emit('search', query.value)
+        emit('search', query.value)
     }
 </script>

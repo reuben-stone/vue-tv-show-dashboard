@@ -79,11 +79,15 @@ npm run test:watch
 
 ```bash
 src/
-├── assets/                # Tailwind CSS entry
-├── components/            # Reusable UI components
+├── assets/               # Tailwind CSS entry
+│   ├── main.css          
+├── components/           # UI components
+│   ├── GenreFilterDropdown.vue
 │   ├── GenreSection.vue
+│   ├── LoadingSpinner.vue
 │   ├── ShowCard.vue
-│   └── SearchBar.vue
+│   ├── SearchBar.vue
+│   └── SortControl.vue
 ├── pages/                 # Page-level views
 │   ├── Home.vue
 │   └── ShowDetails.vue

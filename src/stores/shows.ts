@@ -2,9 +2,9 @@ import { defineStore } from 'pinia'
 
 export const useShowsStore = defineStore('shows', {
   state: () => ({
-    apiPage: 0,              // API page number (increments by 1)
-    apiBuffer: [] as any[],  // raw shows fetched but not yet displayed
-    displayedShows: [] as any[], // shows currently visible in UI
+    apiPage: 0,
+    apiBuffer: [] as any[],       // Queue of unrendered shows
+    displayedShows: [] as any[],  // Shows visible to the user
   }),
   actions: {
     async fetchApiPage() {
@@ -18,22 +18,21 @@ export const useShowsStore = defineStore('shows', {
     },
 
     async loadMoreShows(batchSize = 20) {
-      // If buffer is empty, fetch next API page
+      // Load from buffer or fetch more
       if (this.apiBuffer.length === 0) {
         const hasMore = await this.fetchApiPage()
-        if (!hasMore) return false // no more data
+        if (!hasMore) return false
       }
 
-      // Take up to batchSize shows from buffer and add to displayedShows
       const nextBatch = this.apiBuffer.splice(0, batchSize)
       this.displayedShows.push(...nextBatch)
-      return true
+      return nextBatch.length > 0
     },
 
     clearShows() {
+      this.apiPage = 0
       this.apiBuffer = []
       this.displayedShows = []
-      this.apiPage = 0
     },
   },
 })

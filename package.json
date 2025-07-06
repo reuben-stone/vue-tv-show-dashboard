@@ -11,10 +11,8 @@
     "test:watch": "vitest --watch"
   },
   "dependencies": {
-    "autoprefixer": "^10.4.21",
+    "@tailwindcss/vite": "^4.1.11",
     "pinia": "^3.0.3",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.11",
     "vue": "^3.5.13",
     "vue-router": "^4.5.1"
   },
@@ -22,7 +20,10 @@
     "@vitejs/plugin-vue": "^5.2.3",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.7.0",
+    "autoprefixer": "^10.4.21",
     "jsdom": "^26.1.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.11",
     "typescript": "~5.8.3",
     "vite": "^6.3.5",
     "vitest": "^3.2.4",
