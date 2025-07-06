@@ -1,73 +1,94 @@
 <template>
-  <div class="p-4">
+  <div class="p-4 max-w-7xl mx-auto">
     <div class="flex flex-col sm:flex-col sm:items-center sm:gap-4 mb-4">
       <SearchBar @search="handleSearch" class="flex-1 w-full" />
 
-      <div class="w-full sm:gap-4 mb-4">
+      <div class="w-full sm:gap-4 mb-4 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <GenreFilterDropdown
           v-model:selectedGenres="selectedGenres"
           :allGenres="allGenres"
-          class="mb-4"
+          class="mb-4 sm:mb-0"
         />
-        <SortControl v-model:sortOrder="sortOrder"/>
+        <SortControl v-model:sortOrder="sortOrder" />
       </div>
     </div>
 
-    <p class="text-sm text-gray-500 mb-2 text-right" v-if="!isLoading">
-      Showing {{ filteredShows.length }} shows
-    </p>
+    <div class="flex justify-between items-center mb-2">
+        <p class="text-sm text-gray-500  text-right" v-if="!isLoading">
+        Showing {{ filteredShows.length }} shows
+        </p>
+        <div class="flex justify-end gap-2 mt-2">
+            <button
+                @click="scrollLeft"
+                :disabled="isAtStart"
+                class="rounded-full border border-green-500 bg-white text-green-700 px-4 py-1 text-sm font-semibold cursor-pointer hover:bg-green-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                aria-label="Scroll left"
+            >
+            ‹
+            </button>
+            <button
+                @click="scrollRight"
+                :disabled="isAtEnd"
+                class="rounded-full border border-green-500 bg-white text-green-700 px-4 py-1 text-sm font-semibold cursor-pointer hover:bg-green-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                aria-label="Scroll right"
+            >
+            ›
+            </button>
+        </div>
+    </div>
 
-    <div v-if="filteredShows.length === 0 && !isLoading" class="text-center text-gray-500">
+    <div
+      v-if="filteredShows.length === 0 && !isLoading"
+      key="no-shows"
+      class="text-center text-gray-500"
+    >
       No shows found.
     </div>
 
-    <!-- Loading Spinner -->
-    <LoadingSpinner v-if="isLoading && filteredShows.length === 0" />       
+    <LoadingSpinner
+      v-if="isLoading && filteredShows.length === 0"
+      class="mx-auto my-12"
+    />
 
-    <div v-else class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 py-4">
-        <ShowCard
+    <!-- Carousel container -->
+    <div>
+      <div
+        ref="carousel"
+        class="relative flex gap-6 overflow-x-auto py-4 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-green-500 scrollbar-track-transparent"
+        @scroll="handleScroll"
+      >
+        <transition-group
+          name="fade"
+          tag="div"
+          class="flex gap-4"
+        >
+          <ShowCard
             v-for="show in filteredShows"
             :key="show.id"
             :show="show"
-        />
+            class="snap-start flex-shrink-0"
+            :style="{ width: cardWidth + 'px' }"
+          />
+        </transition-group>
+      </div>
     </div>
 
-    <div class="flex justify-center mt-6" v-if="filteredShows.length > 0">
-        <button
-            v-if="hasMore"
-            @click="loadMore"
-            :disabled="isLoading"
-            class="cursor-pointer px-4 py-2 bg-yellow-200 text-black rounded hover:bg-yellow-400 transition transition-transform duration-300 disabled:opacity-50 flex items-center gap-2"
-        >
-            <svg
-                v-if="isLoading"
-                class="animate-spin h-5 w-5 text-black"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-            >
-            <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-            />
-            <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-            />
-            </svg>
-            <span>{{ isLoading ? 'Loading...' : 'Load More' }}</span>
-        </button>
-        </div>
+    <!-- Load More Button -->
+    <div v-if="filteredShows.length > 0 && hasMore" class="flex justify-center mt-6">
+    <button
+        @click="loadMore"
+        :disabled="isLoading"
+        class="cursor-pointer rounded-full border border-green-500 bg-white text-green-700 px-6 py-2 text-sm font-semibold hover:bg-green-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
+    >
+        {{ isLoading ? 'Loading...' : 'Load More' }}
+    </button>
+    </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useShowsStore } from '../stores/shows'
 import LoadingSpinner from '../components/LoadingSpinner.vue'
 import ShowCard from '../components/ShowCard.vue'
@@ -79,10 +100,33 @@ const store = useShowsStore()
 
 const searchQuery = ref('')
 const isLoading = ref(false)
-const hasMore = ref(true)
+const hasMore = ref(true) // unused but kept
 
 const selectedGenres = ref<string[]>([])
 const sortOrder = ref<'asc' | 'desc'>('desc')
+
+const carousel = ref<HTMLElement | null>(null)
+
+const cardWidth = 256 // fixed width per card
+const gap = 24 // gap-6 = 1.5rem = 24px
+
+const isAtStart = ref(true)
+const isAtEnd = ref(false)
+
+watch(selectedGenres, async () => {
+  if (carousel.value && typeof carousel.value.scrollTo === 'function') {
+    carousel.value.scrollTo({ left: 0, behavior: 'smooth' })
+  }
+})
+
+// Load initial 20 shows on mount (no load more)
+onMounted(async () => {
+  isLoading.value = true
+  await store.loadMoreShows(20)
+  isLoading.value = false
+  await nextTick()
+  updateScrollButtons()
+})
 
 async function loadMore() {
   if (isLoading.value) return
@@ -90,19 +134,27 @@ async function loadMore() {
   const loaded = await store.loadMoreShows(20)
   isLoading.value = false
   hasMore.value = loaded
+  await nextTick()
+  updateScrollButtons()
 }
 
-onMounted(() => {
-  loadMore()
-})
-
 // Combine buffer + displayed to get all available genres
-const allGenres = computed(() => {
-  const genreSet = new Set<string>()
-  ;[...store.displayedShows, ...store.apiBuffer].forEach(show => {
-    show.genres?.forEach((g: string) => genreSet.add(g))
-  })
-  return Array.from(genreSet).sort()
+interface Show {
+    id: number
+    name: string
+    genres: string[]
+    rating?: {
+        average?: number
+    }
+    [key: string]: any
+}
+
+const allGenres = computed<string[]>(() => {
+    const genreSet = new Set<string>()
+    ;[...(store.displayedShows as Show[]), ...(store.apiBuffer as Show[])].forEach((show: Show) => {
+        show.genres?.forEach((g: string) => genreSet.add(g))
+    })
+    return Array.from(genreSet).sort()
 })
 
 // Filter shows by search + genres
@@ -131,8 +183,6 @@ function handleSearch(query: string) {
 }
 
 const dropdownOpen = ref(false)
-
-// Optional: close dropdown on click outside
 function closeDropdown(e: MouseEvent) {
   const target = e.target as HTMLElement
   if (!target.closest('.relative')) {
@@ -147,4 +197,50 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('click', closeDropdown)
 })
+
+function handleScroll() {
+  updateScrollButtons()
+}
+
+function updateScrollButtons() {
+  if (!carousel.value) return
+
+  isAtStart.value = carousel.value.scrollLeft <= 0
+  // Scroll width minus client width is max scrollLeft
+  isAtEnd.value = carousel.value.scrollLeft >= carousel.value.scrollWidth - carousel.value.clientWidth - 1
+}
+
+function scrollLeft() {
+  if (!carousel.value) return
+  carousel.value.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' })
+}
+
+function scrollRight() {
+  if (!carousel.value) return
+  carousel.value.scrollBy({ left: cardWidth + gap, behavior: 'smooth' })
+}
 </script>
+
+<style scoped>
+/* Scrollbar styling */
+.scrollbar-thin::-webkit-scrollbar {
+  height: 8px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgba(34, 197, 94, 0.7); /* green-500 */
+  border-radius: 9999px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Fade transition-group */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

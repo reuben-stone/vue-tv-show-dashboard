@@ -1,46 +1,30 @@
 <template>
-  <div class="relative flex flex-row gap-4 w-full text-left">
+  <div class="w-full flex flex-wrap gap-2 mb-4">
     <button
-      @click="dropdownOpen = !dropdownOpen"
-      class="cursor-pointer w-full border border-gray-300 rounded px-4 py-2 bg-white text-sm text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none"
+      v-for="genre in allGenres"
+      :key="genre"
+      @click="toggleGenre(genre)"
+      class="px-3 py-1 rounded-full border text-sm transition-all duration-200 cursor-pointer"
+      :class="{
+        'bg-green-200 text-green-900 border-green-400': selectedGenres.includes(genre),
+        'bg-white text-gray-700 border-gray-300 hover:bg-gray-100': !selectedGenres.includes(genre),
+      }"
     >
-      <span v-if="props.selectedGenres.length === 0" class="text-gray-400">Select genres</span>
-      <span v-else>{{ props.selectedGenres.join(', ') }}</span>
+      {{ genre }}
     </button>
 
-    <div
-      v-if="dropdownOpen"
-      class="absolute z-10 mt-12 bg-white border border-gray-200 rounded shadow-lg max-h-60 overflow-y-auto"
-    >
-      <div v-for="genre in allGenres" :key="genre" class="px-4 py-2 hover:bg-gray-50">
-        <label class="inline-flex gap-2 cursor-pointer w-full">
-          <input
-            type="checkbox"
-            :value="genre"
-            :checked="props.selectedGenres.includes(genre)"
-            @change="toggleGenre(genre)"
-            class="form-checkbox text-blue-600"
-          />
-          <span>{{ genre }}</span>
-        </label>
-      </div>
-    </div>
     <!-- Clear button -->
-    <div class="" v-if="props.selectedGenres.length > 0">
-        <button
-            @click="clearGenres"
-            class="text-md cursor-pointer py-2 text-black rounded focus:outline-none cursor-pointer"
-        >
-            Clear
-        </button>
-    </div>
+    <button
+      v-if="selectedGenres.length > 0"
+      @click="clearGenres"
+      class="cursor-pointer px-3 py-1 rounded-full border border-red-400 text-red-600 bg-red-50 text-sm hover:bg-red-100 transition-all duration-200"
+    >
+      Clear
+    </button>
   </div>
 </template>
 
-
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-
 const props = defineProps<{
   allGenres: string[]
   selectedGenres: string[]
@@ -48,24 +32,12 @@ const props = defineProps<{
 
 const emit = defineEmits<(e: 'update:selectedGenres', genres: string[]) => void>()
 
-const dropdownOpen = ref(false)
-
 function toggleGenre(genre: string) {
   const newSelection = [...props.selectedGenres]
   const index = newSelection.indexOf(genre)
   index > -1 ? newSelection.splice(index, 1) : newSelection.push(genre)
   emit('update:selectedGenres', newSelection)
 }
-
-function closeDropdown(e: MouseEvent) {
-  const target = e.target as HTMLElement
-  if (!target.closest('.relative')) {
-    dropdownOpen.value = false
-  }
-}
-
-onMounted(() => document.addEventListener('click', closeDropdown))
-onUnmounted(() => document.removeEventListener('click', closeDropdown))
 
 function clearGenres() {
   emit('update:selectedGenres', [])

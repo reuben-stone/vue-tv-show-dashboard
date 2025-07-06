@@ -87,7 +87,9 @@ src/
 │   ├── LoadingSpinner.vue
 │   ├── ShowCard.vue
 │   ├── SearchBar.vue
-│   └── SortControl.vue
+│   ├── SortControl.vue
+│   └── icons/             # Reusable icon components
+│       └── ChevronDown.vue
 ├── pages/                 # Page-level views
 │   ├── Home.vue
 │   └── ShowDetails.vue
