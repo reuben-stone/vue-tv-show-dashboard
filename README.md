@@ -156,4 +156,4 @@ This project is for educational and demonstration purposes only.
 
 Developed by Reuben Stone (www.reubenstone.co.uk)
 
-> Designed for the ABN AMRO Frontend Developer Assessment
+> Designed for Frontend Developer Assessment
