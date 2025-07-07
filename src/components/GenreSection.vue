@@ -1,3 +1,4 @@
+<!-- WIP: TODO: Use this to render individual genre pages -->
 <template>
   <div class="mb-6">
     <h2 class="text-lg font-bold mb-2">{{ genre }}</h2>

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center items-center py-8">
+  <div data-testid="loading-spinner" class="flex justify-center items-center py-8">
     <svg
       class="animate-spin h-8 w-8 text-blue-600"
       xmlns="http://www.w3.org/2000/svg"
